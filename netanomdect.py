@@ -1,6 +1,6 @@
 from scapy.all import *
 
-file = sys.argv[1]
+#file = sys.argv[1]
 
 n = len(sys.argv)
 print("Total arguments passed:", n)
@@ -16,7 +16,7 @@ legitmaclist = []
 with open("legitmacaddressess.txt") as file:
     legitmacmaclist = file.readlines()
 
-
+f = open("/home/robert/macs.txt","w")
 
 for packet in packets:
     if IP in packet:
@@ -31,5 +31,8 @@ for packet in packets:
 
     #print(ipsource, ipdestiation, macsource, macdestination)
     #print(macsource, macdestination, sep='\n')
-
+    f.write(macsource)
+    f.write('\n')
+    f.write(macdestination)
+    f.write('\n')
 

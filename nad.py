@@ -1,17 +1,6 @@
+from scapy import config
 from scapy.all import *
-
-#file = sys.argv[1]
-
-n = len(sys.argv)
-print("Total arguments passed:", n)
-
-
-
-
-#input("Press Enter to continue...")
-# legitmaclist = []
-# with open("legitmacaddressess.txt") as file:
-#     legitmacmaclist = file.readlines()
+import configparser
 
 
 class PktProcessor:
@@ -27,9 +16,7 @@ class PktProcessor:
             self.notsortedlegitmaclist = file.readlines()
             self.mergesort(self.notsortedlegitmaclist)
                 
-            
-        
-            
+          
 
     def merge(self, a, b):
 
@@ -60,17 +47,17 @@ class PktProcessor:
         self.legitmaclist = self.merge(newlist1, newlist2)
         return self.legitmaclist
 
-
-    
+   
         
 
     def initiatePcap(self,pcapFileName):
         self.packets = rdpcap(pcapFileName)
-        print('Długość: ',len(self.packets))
-
-    def getStream(self) -> list:
-        return self.packets
+        print('Pcap file lenth: ',len(self.packets))
     
+    def initiateInterface(self, interface):
+        print("Not implemented yet...")
+
+   
     def binarysearch(self, word, list):
 
         first = 0
@@ -91,21 +78,15 @@ class PktProcessor:
             if set1[i] == word:
                 return True
   
-    
-
-        
+   
 
     def checkmac(self,mac, ip):
         if self.binarysearch(mac, self.legitmaclist) is None:
             if self.linearsearch(mac, self.detectedmacadressess) is None:
                 warning.displaywarning(mac, ip)
                 self.detectedmacadressess.append(mac)
-                print(self.detectedmacadressess)
-
-         
-    
-                
-          
+        
+                      
 
     def next(self, packet):
         if IP in packet:
@@ -127,12 +108,18 @@ class MacWarning:
         print("Warning! Suspicious mac adress was detected:", mac,"  ", ip)
 
 
+CONFIGFILE="nad.cfg"
+config=configparser.ConfigParser()
+config.read(CONFIGFILE)
 
 warning = MacWarning()
-processor = PktProcessor("legitmacaddressess.txt")
-processor.initiatePcap('t3.pcap')
+processor = PktProcessor(config['path']['legitmacs'])
+if config['conf']['mode'] == "pcap":
+    processor.initiatePcap(config['path']['pcap'])
+else:
+    processor.initiateInterface(config['conf']['interface'])
 #pstream = 
-for packet in processor.getStream():
+for packet in processor.packets: 
     processor.next(packet)
       
    
