@@ -17,14 +17,51 @@ print("Total arguments passed:", n)
 class PktProcessor:
 
     #legitmaclist = [] # tim sort algorithme merge = insertion
-    detectedmacadressess = set(())
+    
+    detectedmacadressess = list(set(()))
 
 #    packets = []
 
     def __init__(self, legitMacaddressessFileName):
         with open(legitMacaddressessFileName) as file:
-            self.legitmaclist = file.readlines()
-            #self.legitmaclist.sort()
+            self.notsortedlegitmaclist = file.readlines()
+            self.mergesort(self.notsortedlegitmaclist)
+                
+            
+        
+            
+
+    def merge(self, a, b):
+
+        index_a = 0
+        index_b = 0
+        c = []
+        while index_a < len(a) and index_b < len(b):
+            if a[index_a] <= b[index_b]:
+                c.append(a[index_a])
+                index_a = index_a + 1
+            else:
+                c.append(b[index_b])
+                index_b = index_b + 1
+ 
+        c.extend(a[index_a:])
+        c.extend(b[index_b:])
+        return c
+
+    def mergesort(self, list):
+        if len(list) == 0 or len(list) == 1: 
+            return list[:len(list)] 
+        #recursion
+        halfway = len(list) // 2
+        list1 = list[0:halfway]
+        list2 = list[halfway:len(list)]
+        newlist1 = self.mergesort(list1) 
+        newlist2 = self.mergesort(list2) 
+        self.legitmaclist = self.merge(newlist1, newlist2)
+        return self.legitmaclist
+
+
+    
         
 
     def initiatePcap(self,pcapFileName):
@@ -47,15 +84,23 @@ class PktProcessor:
                     last = middle - 1
                 else:
                     first = middle + 1
+
+    def linearsearch(self, word, set1):
+  
+        for i in range(len(set1)):
+            if set1[i] == word:
+                return True
+  
+    
+
         
 
     def checkmac(self,mac, ip):
-        for mac in self.legitmaclist:
-            if self.binarysearch(mac, self.legitmaclist) is None:
-                if not mac in self.detectedmacadressess:
-                    warning.displaywarning(mac, ip)
-                    self.detectedmacadressess.add(mac)
-                    print(self.detectedmacadressess)
+        if self.binarysearch(mac, self.legitmaclist) is None:
+            if self.linearsearch(mac, self.detectedmacadressess) is None:
+                warning.displaywarning(mac, ip)
+                self.detectedmacadressess.append(mac)
+                print(self.detectedmacadressess)
 
          
     
@@ -69,8 +114,8 @@ class PktProcessor:
         else:
             ipsource = ipdestination = '0.0.0.0'
         e = packet[Ether]
-        macsource = e.src
-        macdestination =e.dst
+        macsource = str(e.src) + str('\n')
+        macdestination = str(e.dst) + str('\n')
         self.checkmac(macsource, ipsource)
         self.checkmac(macdestination, ipdestination)
 
