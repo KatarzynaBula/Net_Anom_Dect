@@ -38,21 +38,20 @@ class PktProcessor:
 
         first = 0
         last = len(list) - 1
-        found = False
-        while first <= last and not found:
+        while first <= last and not False:
             middle = (first + last)//2
             if list[middle] == word:
-                True
+                return True
             else:
                 if word < list[middle]:
                     last = middle - 1
                 else:
                     first = middle + 1
-        return 
+        
 
     def checkmac(self,mac, ip):
         for mac in self.legitmaclist:
-           if self.binarysearch(mac, self.legitmaclist) is False:
+            if self.binarysearch(mac, self.legitmaclist) is None:
                 if not mac in self.detectedmacadressess:
                     warning.displaywarning(mac, ip)
                     self.detectedmacadressess.add(mac)
