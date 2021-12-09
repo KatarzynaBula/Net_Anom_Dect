@@ -2,21 +2,20 @@ from scapy import config
 from scapy.all import *
 import configparser
 
+#Naming convencion:
+#module_name, package_name, ClassName, method_name, ExceptionName, function_name, GLOBAL_CONSTANT_NAME, global_var_name, instance_var_name, function_parameter_name, local_var_name.
 
 class PktProcessor:
 
     
-    detectedmacadressess = list(set(()))
+    detected_mac_adressess = list(set(()))
 
 
-    def __init__(self, legitMacaddressessFileName):
-        with open(legitMacaddressessFileName) as file:
-            #self.notsortedlegitmaclist = file.readlines()
-            self.notsortedlegitmaclist = file.read().splitlines()
-            self.mergesort(self.notsortedlegitmaclist)
+    def __init__(self, legit_mac_addressess_file_name):
+        with open(legit_mac_addressess_file_name) as file:
+            self.not_sorted_legit_mac_list = file.read().splitlines()
+            self.merge_sort(self.not_sorted_legit_mac_list)
                 
-          
-
     def merge(self, a, b):
 
         index_a = 0
@@ -34,30 +33,27 @@ class PktProcessor:
         c.extend(b[index_b:])
         return c
 
-    def mergesort(self, list):
+    def merge_sort(self, list):
         if len(list) == 0 or len(list) == 1: 
             return list[:len(list)] 
         #recursion
         halfway = len(list) // 2
         list1 = list[0:halfway]
         list2 = list[halfway:len(list)]
-        newlist1 = self.mergesort(list1) 
-        newlist2 = self.mergesort(list2) 
-        self.legitmaclist = self.merge(newlist1, newlist2)
-        return self.legitmaclist
+        newlist1 = self.merge_sort(list1) 
+        newlist2 = self.merge_sort(list2) 
+        self.legit_mac_list = self.merge(newlist1, newlist2)
+        return self.legit_mac_list
 
-   
-        
-
-    def initiatePcap(self,pcapFileName):
+    def initiate_Pcap(self,pcapFileName):
         self.packets = rdpcap(pcapFileName)
         print('Pcap file lenth: ',len(self.packets))
     
-    def initiateInterface(self, interface):
+    def initiate_Interface(self, interface):
         print("Not implemented yet...")
 
    
-    def binarysearch(self, word, list):
+    def binary_search(self, word, list):
 
         first = 0
         last = len(list) - 1
@@ -71,41 +67,35 @@ class PktProcessor:
                 else:
                     first = middle + 1
 
-    def linearsearch(self, word, set1):
+    def linear_search(self, word, set1):
   
         for i in range(len(set1)):
             if set1[i] == word:
                 return True
   
-   
-
-    def checkmac(self,mac, ip):
-        if self.binarysearch(mac, self.legitmaclist) is None:
-            if self.linearsearch(mac, self.detectedmacadressess) is None:
-                warning.displaywarning(mac, ip)
-                self.detectedmacadressess.append(mac)
+    def check_mac(self,mac, ip):
+        if self.binary_search(mac, self.legit_mac_list) is None:
+            if self.linear_search(mac, self.detected_mac_adressess) is None:
+                warning.display_warning(mac, ip)
+                self.detected_mac_adressess.append(mac)
         
-                      
-
     def next(self, packet):
         if IP in packet:
-            ipsource=packet[IP].src
-            ipdestination = packet[IP].dst
+            ip_source=packet[IP].src
+            ip_destination = packet[IP].dst
         else:
-            ipsource = ipdestination = '0.0.0.0'
+            ip_source = ip_destination = '0.0.0.0'
         e = packet[Ether]
-        #macsource = str(e.src) + str('\n')
-        macsource = str(e.src)
-        #macdestination = str(e.dst) + str('\n')
-        macdestination = str(e.dst)
-        self.checkmac(macsource, ipsource)
-        self.checkmac(macdestination, ipdestination)
+        mac_source = str(e.src)
+        mac_destination = str(e.dst)
+        self.check_mac(mac_source, ip_source)
+        self.check_mac(mac_destination, ip_destination)
 
 class MacWarning:
     def __init__(self):
         pass
 
-    def displaywarning(self, mac, ip):
+    def display_warning(self, mac, ip):
         print("Warning! Suspicious mac adress was detected:", mac,"  ", ip)
 
 
@@ -116,16 +106,9 @@ config.read(CONFIGFILE)
 warning = MacWarning()
 processor = PktProcessor(config['path']['legitmacs'])
 if config['conf']['mode'] == "pcap":
-    processor.initiatePcap(config['path']['pcap'])
+    processor.initiate_Pcap(config['path']['pcap'])
 else:
-    processor.initiateInterface(config['conf']['interface'])
-#pstream = 
+    processor.initiate_Interface(config['conf']['interface'])
 for packet in processor.packets: 
     processor.next(packet)
       
-   
-
-    #print(ipsource, ipdestination, macsource, macdestination)
-    #print(macsource, macdestination, sep='\n')
-
-
