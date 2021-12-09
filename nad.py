@@ -5,15 +5,14 @@ import configparser
 
 class PktProcessor:
 
-    #legitmaclist = [] # tim sort algorithme merge = insertion
     
     detectedmacadressess = list(set(()))
 
-#    packets = []
 
     def __init__(self, legitMacaddressessFileName):
         with open(legitMacaddressessFileName) as file:
-            self.notsortedlegitmaclist = file.readlines()
+            #self.notsortedlegitmaclist = file.readlines()
+            self.notsortedlegitmaclist = file.read().splitlines()
             self.mergesort(self.notsortedlegitmaclist)
                 
           
@@ -95,8 +94,10 @@ class PktProcessor:
         else:
             ipsource = ipdestination = '0.0.0.0'
         e = packet[Ether]
-        macsource = str(e.src) + str('\n')
-        macdestination = str(e.dst) + str('\n')
+        #macsource = str(e.src) + str('\n')
+        macsource = str(e.src)
+        #macdestination = str(e.dst) + str('\n')
+        macdestination = str(e.dst)
         self.checkmac(macsource, ipsource)
         self.checkmac(macdestination, ipdestination)
 
