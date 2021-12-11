@@ -2,7 +2,7 @@ from scapy import config
 from scapy.all import *
 import configparser
 
-#Naming convencion:
+#Naming convention:
 #module_name, package_name, ClassName, method_name, ExceptionName, function_name, GLOBAL_CONSTANT_NAME, global_var_name, instance_var_name, function_parameter_name, local_var_name.
 
 class PktProcessor:
@@ -37,12 +37,12 @@ class PktProcessor:
         if len(list) == 0 or len(list) == 1: 
             return list[:len(list)] 
         #recursion
-        halfway = len(list) // 2
-        list1 = list[0:halfway]
-        list2 = list[halfway:len(list)]
-        newlist1 = self.merge_sort(list1) 
-        newlist2 = self.merge_sort(list2) 
-        self.legit_mac_list = self.merge(newlist1, newlist2)
+        half_way = len(list) // 2
+        list1 = list[0:half_way]
+        list2 = list[half_way:len(list)]
+        new_list1 = self.merge_sort(list1) 
+        new_list2 = self.merge_sort(list2) 
+        self.legit_mac_list = self.merge(new_list1, new_list2)
         return self.legit_mac_list
 
     def initiate_Pcap(self,pcapFileName):
@@ -50,7 +50,7 @@ class PktProcessor:
         print('Pcap file lenth: ',len(self.packets))
     
     def initiate_Interface(self, interface):
-        print("Not implemented yet...")
+        print("Live capture not implemented yet...")
 
    
     def binary_search(self, word, list):
